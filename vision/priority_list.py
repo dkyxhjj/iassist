@@ -1,7 +1,7 @@
 import numpy as np
 from collections import deque
 import time
-from .imports import *
+from vision.imports import *
 
 navigation_data = [
     "A person is walking towards you with a briefcase",

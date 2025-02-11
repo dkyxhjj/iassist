@@ -66,9 +66,19 @@ npm run dev
 ### Option 2: Run Visual Tracking Standalone
 If you only want to run the visual tracking system without the web interface:
 
+1. Set up Groq API:
+```bash
+# Set your Groq API key as an environment variable
+export GROQ_API_KEY='your-api-key-here'
+```
+
+2. Run the visual tracking system:
 ```bash
 # Activate virtual environment if not already active
 source venv/bin/activate  # On Windows use: venv\Scripts\activate
+
+# Install/update dependencies
+pip install -r requirements.txt
 
 # Run the visual tracking system
 cd vision

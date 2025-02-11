@@ -1,4 +1,4 @@
-from .imports import *
+from vision.imports import *
 
 @dataclass
 class DetectedObject:

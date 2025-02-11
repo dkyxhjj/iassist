@@ -1,17 +1,75 @@
-from .imports import *
-from .scene import Scene
-from .priority_list import NavigationQueue
-from .tts import TTSProcessor
+from vision.imports import *
+from vision.scene import Scene
+from vision.priority_list import NavigationQueue
+from vision.tts import TTSProcessor
+import sys
+import platform
+from collections import deque
+import time
+import cv2
+
+def find_available_camera():
+    """Try to find an available camera by testing different indices."""
+    print("Searching for available cameras...")
+    
+    # Try the first few camera indices
+    for index in range(2):  # Try camera indices 0 and 1
+        print(f"Trying camera index {index}...")
+        cap = cv2.VideoCapture(index)
+        if cap.isOpened():
+            ret, frame = cap.read()
+            if ret:
+                print(f"Successfully found camera at index {index}")
+                cap.release()
+                return index
+            cap.release()
+    
+    return None
+
+def check_camera_access():
+    """Check if camera is accessible and provide clear error messages."""
+    try:
+        # Print system information
+        print(f"Operating System: {platform.system()} {platform.release()}")
+        
+        # Find available camera
+        camera_index = find_available_camera()
+        if camera_index is None:
+            print("\nError: Could not access any cameras. Please check:")
+            print("1. If a camera is connected to your computer")
+            print("2. If you have granted camera permissions:")
+            print("   - On macOS: System Preferences -> Security & Privacy -> Camera")
+            print("   - On Linux: Check if you're in the 'video' group")
+            print("   - On Windows: Settings -> Privacy -> Camera")
+            print("\n3. If you're running this in a terminal, try:")
+            print("   - Running from a different terminal")
+            print("   - Running with sudo (if on Linux)")
+            return False, None
+            
+        return True, camera_index
+            
+    except Exception as e:
+        print(f"Error accessing camera: {str(e)}")
+        return False, None
 
 def main():
+    # First check camera access
+    camera_available, camera_index = check_camera_access()
+    if not camera_available:
+        return
+
     frame_size = (640, 480)  # Smaller frame size for faster processing
     fps_target = 30
     frame_interval = 1.0 / fps_target
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(camera_index)
     if not cap.isOpened():
-        print("Error: Camera not accessible")
+        print(f"Error: Failed to open camera {camera_index}")
         return
+
+    # Set camera properties
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, frame_size[0])
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, frame_size[1])
 
     # Fast tracking settings
     tracking_buffer_size = 5  # Keep last 5 frames for movement

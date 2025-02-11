@@ -1,5 +1,5 @@
-from .imports import *
-from .detected_obj import DetectedObject
+from vision.imports import *
+from vision.detected_obj import DetectedObject
     
 class Scene:
     def __init__(self):
